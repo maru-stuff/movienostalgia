@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Random Watchlist Generator</title>
+    <link th:href="@{/styles/main.css}" rel="stylesheet"/>
+</head>
+<body>
+<div>
+    <div class="moviesList">
+        <h2>Movie propositions randomly generated for you</h2>
+        <a href="/">
+            <button type="button">Generate another set of random movies</button>
+        </a>
+        <div class="container">
+            <div class="movie" th:each="movie : ${movieList}">
+                <h2 class="title" th:text="${movie.getTitle()}"></h2>
+                <h3 class="year" th:text="${movie.getYear()}"></h3>
+                <img class="poster" th:src="${movie.getPoster()}">
+                <p class="plot" th:text="${movie.getPlot()}"></p>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>
