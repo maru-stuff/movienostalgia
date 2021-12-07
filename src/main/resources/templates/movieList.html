@@ -8,9 +8,13 @@
 <body>
 <div>
     <div class="moviesList">
-        <h2>Movie propositions randomly generated for you</h2>
         <a href="/">
-            <button type="button">Generate another set of random movies</button>
+            <button type="button">Get back to index</button>
+        </a>
+        <h2>Movie propositions randomly generated for you</h2>
+
+        <a href="/movies/randomlist">
+            <button type="button">Generate another random movie list</button>
         </a>
         <div class="container">
             <div class="movie" th:each="movie : ${movieList}">

@@ -1,16 +1,13 @@
-package marustuff.movienostalgia;
+package marustuff.movierandomizer;
 
-import lombok.SneakyThrows;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.concurrent.TimeUnit;
 
 @Service
 public class OmbdService {
@@ -26,16 +23,16 @@ public class OmbdService {
     private static final String IMDB_ID_URL_PARAMETER="&i=";
     private static final String IMBD_ID_PREFIX = "tt0";
     private static final String IMDB_ID_RANDOM_NUMBER_FORMAT = "%06d";
-    private static final String NOT_AVAIBLE = "N/A";
+    private static final String NOT_AVAILABLE = "N/A";
+    private static final String DUPLICATE = "#DUPE#";
 
     public Movie getMovieByimdbId(String imdbId) throws MovieNotFoundException {
         RestTemplate restTemplate = new RestTemplate();
-        Movie movie = restTemplate.getForObject(OMDB_API_ENDPOINT + API_KEY +  IMDB_ID_URL_PARAMETER + imdbId, Movie.class);
-        return movie;
+        return restTemplate.getForObject(OMDB_API_ENDPOINT + API_KEY +  IMDB_ID_URL_PARAMETER + imdbId, Movie.class);
     }
 
-    public String getMovieByIdView(String imbdId, Model model) throws MovieNotFoundException {
-        model.addAttribute(MOVIE_ATTRIBUTE_MODEL_NAME, getMovieByimdbId(imbdId));
+    public String getMovieByIdView(String imdbId, Model model) throws MovieNotFoundException {
+        model.addAttribute(MOVIE_ATTRIBUTE_MODEL_NAME, getMovieByimdbId(imdbId));
         return BY_ID_MODEL_VIEW;
     }
 
@@ -43,37 +40,33 @@ public class OmbdService {
         String imdbId;
         Movie movie;
         while (true) {
-            int randomNum = ThreadLocalRandom.current().nextInt(000000, 399999);
+            int randomNum = ThreadLocalRandom.current().nextInt(0, 399999);
             try {
-                Thread.sleep(1000);
+                Thread.sleep(300);
             } catch (InterruptedException e){
-                logger.error("InterruptedException");
+                logger.error("InterruptedException"+e.getMessage());
             }
             imdbId = IMBD_ID_PREFIX + String.format(IMDB_ID_RANDOM_NUMBER_FORMAT, randomNum);
-            logger.info("imbdId = " + imdbId);
+            logger.info("imdbId = " + imdbId);
             try {
                 movie = getMovieByimdbId(imdbId);
-
-                if(movie.getTitle().equals(null)||movie.getTitle().equals("#DUPE#")){
-
-                    continue;
-                } else if (movie.getPoster().equals(NOT_AVAIBLE)||movie.getPoster().equals(null)||movie.getTitle().equals(null)||movie.getTitle().equals(NOT_AVAIBLE)) {
-
-
-                    continue;
-                } else {
-                    logger.info("title=" + movie.getTitle());
-                    logger.info("poster=" + movie.getPoster());
-                    logger.info("plot=" + movie.getPlot());
-                    logger.info("movie="+movie.toString());
-                    break;
+                if(hasNecessaryData(movie)){
+                    logger.info("movie="+movie);
+                    return movie;
                 }
             } catch (MovieNotFoundException e) {
-                logger.error(e.getMessage());
-                continue;
+                logger.warn(e.getMessage());
             }
         }
-        return movie;
+    }
+
+    private boolean hasNecessaryData(Movie movie){
+        return movie.getTitle() !=null &&
+                movie.getPoster() !=null &&
+                !movie.getTitle().equals(DUPLICATE) &&
+                !movie.getPoster().equals(NOT_AVAILABLE)&&
+                !movie.getTitle().equals(NOT_AVAILABLE)&&
+                !movie.getPlot().equals(NOT_AVAILABLE);
     }
 
     public String getRandomMovieView(Model model) {
@@ -82,11 +75,11 @@ public class OmbdService {
     }
 
     public String getRandomMovieListView(Model model) {
-        ArrayList<Movie> movieList = new ArrayList<Movie>();
+        ArrayList<Movie> movieList = new ArrayList<>();
         for (int i = 1; i <= 4; i++) {
 
             movieList.add(getRandomMovie());
-            logger.info(i + " th movie generated");
+            logger.info(i + "movie generated");
         }
 
         model.addAttribute(MOVIE_LIST_ATTRIBUTE_MODEL_NAME, movieList);
