@@ -2,6 +2,12 @@ package marustuff.movierandomizer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.client.RestTemplate;
@@ -10,16 +16,20 @@ import java.util.ArrayList;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Service
+@PropertySource("omdb.properties")
 public class OmbdService {
+    @Autowired
+    private Environment env;
+
     private static final String MOVIE_ATTRIBUTE_MODEL_NAME = "movie";
     private static final String BY_ID_MODEL_VIEW = "byid";
-    private static final String API_KEY = "15913db";
-
+    @Value("${omdb.apiKey}")
+    private  String API_KEY;
     private static final Logger logger = LoggerFactory.getLogger(OmbdService.class);
     private static final String RANDOM_MOVIE_LIST_VIEW = "movieList";
     private static final String MOVIE_LIST_ATTRIBUTE_MODEL_NAME = "movieList";
-    private static final String GENERIC_ERROR_VIEW = "error";
-    private static final String OMDB_API_ENDPOINT = "http://www.omdbapi.com/?apikey=";
+    @Value("${omdb.endpointUrl}")
+    private  String OMDB_API_ENDPOINT;
     private static final String IMDB_ID_URL_PARAMETER="&i=";
     private static final String IMBD_ID_PREFIX = "tt0";
     private static final String IMDB_ID_RANDOM_NUMBER_FORMAT = "%06d";
