@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<a href="/">
+    <button type="button">Get back to index</button>
+</a>
+<a href="/movies/random"><button type="button">Get random movie recommendation</button></a>
+<h2 th:text="${movie.getTitle()}"></h2>
+<h3 th:text="${movie.getYear()}"></h3>
+
+<img th:src="${movie.getPoster()}">
+
+<p th:text="${movie.getPlot()}"></p>
+</body>
+</html>

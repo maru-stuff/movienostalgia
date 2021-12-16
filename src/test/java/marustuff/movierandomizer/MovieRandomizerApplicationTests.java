@@ -1,10 +1,10 @@
-package marustuff.movienostalgia;
+package marustuff.movierandomizer;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class MovienostalgiaApplicationTests {
+class MovieRandomizerApplicationTests {
 
 	@Test
 	void contextLoads() {
